@@ -3413,7 +3413,7 @@ d-citation-list .references .title {
 
         var Extensions = {
           js: "javascript",
-          py: "python",
+          // py: "python",
           rb: "ruby",
           ps1: "powershell",
           psm1: "powershell",
