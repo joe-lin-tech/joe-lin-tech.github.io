@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: digital humans
-description: a deep dive into representing and understanding humans
+description: (draft) a deep dive into representing and understanding humans
 tags: ["deep learning", "computer vision"]
 giscus_comments: true
 date: 2024-07-03
@@ -32,7 +32,7 @@ toc:
 With the rapid advancement of technology, interactions between humans and machines have continued to skyrocket. And whether it's asking ChatGPT for assistance or taking a ride in an autonomous vehicle, society has seen the remarkable impacts of deep learning (albeit often with undesired consequences, but that's a discussion for another time). For many of these applications, AI algorithms must obtain a rich understanding of human language, appearance, and behavior in order to produce meaningful results. As you can imagine, humans are incredibly diverse, not only in our physical appearance but also in the way we move and the way we interact with the surrounding environment. These complexities present challenging obstacles that have driven years of computer vision and deep learning research, some of which will be discussed in this article.
 
 ## Modeling Humans
-The first objective is to formulate an effective representation of the human body. The initial question we may ask ourselves is: *what are the defining points of our body?* You might come to the realization that our joints are quite capable of expressing our body pose. This paradigm of modeling humans as a collection of joints has long been established <d-cite key="Johansson1973VisualPO"></d-cite> and is still prevalent today. In fact, one of the most notable computer vision datasets, COCO <d-cite key="lin2015microsoftcococommonobjects"></d-cite>, contains joint annotations, reflecting its importance in scene understanding.
+Our first objective is to formulate an effective representation of the human body. The initial question we may ask ourselves is: *what are the defining points of our body?* You might come to the realization that our joints are quite capable of expressing our body pose. This paradigm of modeling humans as a collection of joints has long been established <d-cite key="Johansson1973VisualPO"></d-cite> and is still prevalent today. In fact, one of the most notable computer vision datasets, COCO <d-cite key="lin2015microsoftcococommonobjects"></d-cite>, contains joint annotations, reflecting its importance in scene understanding.
 
 <div class="row mt-3">
     <div class="col-sm mt-3 mt-md-0">
@@ -214,6 +214,15 @@ First off, the approach we have taken with diffusion models restricts us to gene
 
 Currently, independently generating two motions and concatenating them together will result in unrealistic and rough transitions. So, *how can we refine this transition segment motion, so that it appears more natural and logical?* <d-cite key="shafir2023humanmotiondiffusiongenerative"></d-cite> proposes a double pass inference-time solution, where it (1) generates short-term motion sequences, while maintaining a **handshake** with neighboring segments and (2) improves the transition segment by **soft-masking** and refining through the denoising process.
 
-In the first take, each short-term motion interval is generated independently and at each denoising step, we replace 
+<div class="row mt-3">
+    <div class="col-sm mt-3 mt-md-0">
+        {% include figure.liquid loading="eager" path="assets/img/digital_humans/priormdm.png" class="img-fluid rounded z-depth-1" %}
+    </div>
+</div>
+<div class="caption">
+    Two pass inference-time technique for long-term motion generation <d-cite key="shafir2023humanmotiondiffusiongenerative"></d-cite>.
+</div>
+
+In the first take, short-term motion intervals are generated independently as a batch. A handshake is then maintained at each denoising step, where the transition segments are replaced with the frame-wise average of the corresponding motion prefixes and suffixes. This ensures a certain extent of consistent generation between intervals. The second take enhances the smoothness of transition segments.
 
 ## Closing Thoughts
