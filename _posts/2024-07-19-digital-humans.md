@@ -4,7 +4,7 @@ title: digital humans
 description: (draft) a deep dive into representing and understanding humans
 tags: ["deep learning", "computer vision"]
 giscus_comments: true
-date: 2024-07-03
+date: 2024-07-19
 featured: true
 
 authors:
@@ -13,7 +13,7 @@ authors:
     affiliations:
       name: UCLA
 
-bibliography: 2024-07-03-digital-humans.bib
+bibliography: 2024-07-19-digital-humans.bib
 
 toc:
   - name: Modeling Humans
@@ -191,6 +191,8 @@ There's a couple adjustments that we can make based on intuition and empirical r
 
 In the end, we can optimize our transformer-based denoising model by taking gradient steps on $$\nabla_{\theta} {\left \lVert \epsilon - \epsilon_{\theta} (x_{t}, t) \right \rVert}^{2}$$, where $$x_{t} = \sqrt{\bar{\alpha}_{t}} x_{0} + \sqrt{1 - \bar{\alpha}_{t}} \epsilon$$.
 
+Next, it's important to consider potential evaluation metrics to determine our model's performance. One metric we can compute is the **mean per joint position error** or **MPJPE** between the generated and ground truth motions. Although this metric is primarily used for motion estimation, it can help quantify how reasonable and realistic the generated motion is. We can also calculate a **average displacement error** or **ADE**, which is the temporal average of the $$\mathcal{l}_2$$ distance from the ground truth as well as a **final displacement error** or **FDE**, which reflects the deviation of the generated motion's final position from the ground truth. **Diversity** metrics can be used to indicate the variety of generated motions.
+
 ### Controllable Generation
 At this point, we've designed a diffusion model that can generate human motions unconditionally. But, in most cases, we have some criteria for the type of motions to generate, whether that be some label, text prompt, or visual scene context. *How do we modify our diffusion model to consider these conditions?*
 
@@ -199,7 +201,7 @@ To start, we can directly add a conditioning signal as an input to our denoising
 $$ \begin{aligned} \nabla \log p(x_{t} \vert y) &= \nabla \log \frac{p(x_{t}) p(y \vert x_{t})}{p(y)} \\
 &= \nabla \log p(x_{t}) + \nabla \log p(y \vert x_{t}) \end{aligned} $$
 
-Thus, we can amplify the effects of our conditioning signal by applying a **guidance scale** $$\gamma$$ on $$\nabla \log p(y \vert x_{t})$$. This will give us much better sampling results, but there still remain some issues. It's difficult to obtain a suitable classifier, since it must be capable of classifying noisy inputs $$x_{t}$$. Another problem is that when it comes to conditioning on text prompt or visual context, there's no notion of classification.
+Thus, we can amplify the effects of our conditioning signal by applying a **guidance scale** $$\gamma$$ on $$\nabla \log p(y \vert x_{t})$$. This will give us much better sampling results, but there still remains some drawbacks. It's difficult to obtain a suitable classifier, since it must be capable of classifying noisy inputs $$x_{t}$$. Another problem is that when it comes to conditioning on text prompt or visual context, there's no notion of classification.
 
 To solve our problem, we can use **classifier-free guidance** <d-cite key="ho2022classifierfreediffusionguidance"></d-cite>. From Bayes' rule, we know that $$\nabla \log p(x_{t} \vert y) - \nabla \log p(x_{t}) = \nabla \log p(y \vert x_{t})$$. Plugging this into the classifier guidance equation gives us:
 
@@ -223,6 +225,19 @@ Currently, independently generating two motions and concatenating them together 
     Two pass inference-time technique for long-term motion generation <d-cite key="shafir2023humanmotiondiffusiongenerative"></d-cite>.
 </div>
 
-In the first take, short-term motion intervals are generated independently as a batch. A handshake is then maintained at each denoising step, where the transition segments are replaced with the frame-wise average of the corresponding motion prefixes and suffixes. This ensures a certain extent of consistent generation between intervals. The second take enhances the smoothness of transition segments.
+In the first take, short-term motion intervals are generated independently as a batch. A handshake is then maintained at each denoising step, where the transition segments are replaced with the frame-wise average of the corresponding motion prefixes and suffixes. This ensures a certain extent of consistent generation between intervals. The update equation is as follows:
+
+$$ \tau_{i} = (1 - \vec{\alpha}) \odot S_{i - 1} [-h:] + \vec{\alpha} \odot S_{i} [:h] $$
+
+$$S_{i - 1} [-h:]$$ is the suffix of the preceding motion and $$S_{i} [:h]$$ is the prefix of the succeeding motion. $$\alpha_j = \frac{j}{h}$$ for all $$j \in [0, h)$$. Note that $$\odot$$ is the hadamard product.
+
+The second take enhances the smoothness of transition segments by noising a soft-masked interval for some $$T'$$ steps and denoising it to a clean motion.
+
+Besides long-term motion generation, we often desire to generate movements given some motion criteria, such as its trajectory. Such a task is known as **motion inpainting**, which is analagous to image inpainting. Instead of filling in unknown pixels, we're using motion priors to generate the rest of the motion vector. A common technique is to **impute** noised target motion values after every denoising step $$t$$. The imputed sample can be expressed as <d-cite key="karunratanakul2023guidedmotiondiffusioncontrollable"></d-cite>:
+
+$$ \tilde{x}_{t - 1} = (1 - M_{y}^{x}) \odot x_{t - 1} + M_{y}^{x} \odot P_{y}^{x} y_{t - 1} $$
+
+Here, $$y_{t - 1}$$ are the noised target values we want to impute on the noised motion vector $$x_{t - 1}$$. This could, for instance, be the noised motion trajectory. $$M_{y}^{x}$$ is a mask denoting the imputation region of $$y$$ on $$x$$ and $$P_{y}^{x}$$ is a projection of $$y$$ to $$x$$ that resizes $$y$$ by zero-filling. However, applying imputation this way may not be as effective as it seems. <d-cite key="karunratanakul2023guidedmotiondiffusioncontrollable"></d-cite> points out the fact that imputation signals may be too weak if they only span a small portion of the motion vector, resulting in the diffusion model ignoring these changes. For this reason, <d-cite key="karunratanakul2023guidedmotiondiffusioncontrollable"></d-cite> introduced **emphasis projection**, which essentially scales the relative importance of the imputation signal within the motion vector.
 
 ## Closing Thoughts
+Hopefully this article gave you a glimpse of the incredible work that has already been done to effectively represent humans and our movements as well as generate realistic motions. This field continues to rapidly expand to new areas, such as multi-person motion generation and human-object interaction synthesis.
