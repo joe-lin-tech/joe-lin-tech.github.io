@@ -194,6 +194,9 @@ collections:
   projects:
     output: true
     permalink: /projects/:path/
+  notes:
+    output: true
+    permalink: /notes/:path/
 
 announcements:
   enabled: true

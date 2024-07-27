@@ -83,6 +83,10 @@ blockquote {
     h6 {
       color: var(--global-tip-block-title);
     }
+
+    strong {
+      color: var(--global-tip-block-text);
+    }
   }
 
   &.block-warning {
@@ -622,6 +626,43 @@ footer.sticky-bottom {
     img {
       width: 100%;
     }
+  }
+
+  .col {
+    padding-bottom: 1rem;
+  }
+
+  .grid-sizer,
+  .grid-item {
+    width: 250px;
+    margin-bottom: 10px;
+  }
+
+  h2.category {
+    color: var(--global-divider-color);
+    border-bottom: 1px solid var(--global-divider-color);
+    padding-top: 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    text-align: right;
+  }
+}
+
+// Notes
+
+.notes {
+  a {
+    text-decoration: none;
+
+    &:hover {
+      .card-title {
+        color: var(--global-theme-color);
+      }
+    }
+  }
+
+  .card {
+    width: 100%;
   }
 
   .col {
