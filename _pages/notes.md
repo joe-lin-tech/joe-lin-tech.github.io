@@ -2,7 +2,7 @@
 layout: page
 title: notes
 permalink: /notes/
-description: 
+description: collection of detailed notes and summaries from my academic courses
 nav: true
 nav_order: 4
 horizontal: false
