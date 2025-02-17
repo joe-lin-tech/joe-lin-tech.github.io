@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: digital humans
-description: (draft) a deep dive into representing and understanding humans
+description: a deep dive into representing and understanding humans
 tags: ["deep learning", "computer vision"]
 giscus_comments: true
 date: 2024-07-19
@@ -240,4 +240,4 @@ $$ \tilde{x}_{t - 1} = (1 - M_{y}^{x}) \odot x_{t - 1} + M_{y}^{x} \odot P_{y}^{
 Here, $$y_{t - 1}$$ are the noised target values we want to impute on the noised motion vector $$x_{t - 1}$$. This could, for instance, be the noised motion trajectory. $$M_{y}^{x}$$ is a mask denoting the imputation region of $$y$$ on $$x$$ and $$P_{y}^{x}$$ is a projection of $$y$$ to $$x$$ that resizes $$y$$ by zero-filling. However, applying imputation this way may not be as effective as it seems. <d-cite key="karunratanakul2023guidedmotiondiffusioncontrollable"></d-cite> points out the fact that imputation signals may be too weak if they only span a small portion of the motion vector, resulting in the diffusion model ignoring these changes. For this reason, <d-cite key="karunratanakul2023guidedmotiondiffusioncontrollable"></d-cite> introduced **emphasis projection**, which essentially scales the relative importance of the imputation signal within the motion vector.
 
 ## Closing Thoughts
-Hopefully this article gave you a glimpse of the incredible work that has already been done to effectively represent and generate human motion. The field continues to rapidly expand to new areas, such as multi-person motion generation and human-object interaction synthesis.
+Hopefully this article gave you a glimpse of the incredible work that has already been done to effectively represent and generate human motion. The field continues to rapidly expand to new areas, such as multi-person motion generation and human-object interaction synthesis. It's exciting to see where research will take us next!
