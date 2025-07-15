@@ -4,7 +4,7 @@
 
 title: blank # the website title (if blank, full name will be used instead)
 first_name: Joe
-middle_name: 
+middle_name:
 last_name: Lin
 email: joelintech@ucla.edu
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
@@ -109,7 +109,7 @@ x_username: # your X handle
 youtube_id: # your youtube channel id (youtube.com/@<youtube_id>)
 zotero_username: # your zotero username
 
-contact_note: 
+contact_note:
 
 # -----------------------------------------------------------------------------
 # Analytics and search engine verification
@@ -532,7 +532,7 @@ third_party_libraries:
     version: "1.9.4"
   mathjax:
     integrity:
-      js: "sha256-rjmgmaB99riUNcdlrDtcAiwtLIojSxNyUFdl+Qh+rB4="
+      js: "sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="
     local:
       fonts: "output/chtml/fonts/woff-v2/"
     url:
